@@ -1,17 +1,20 @@
 "use client"
 
+import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { LogOut } from 'lucide-react'
+import { useModalStore } from '@/store/modal-store'
+import { LogOut, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function Header() {
   const supabase = createClient()
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const { openTransactionModal } = useModalStore()
 
   useEffect(() => {
     const getUser = async () => {
@@ -29,8 +32,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-white/5 bg-background/80 px-4 md:px-8 backdrop-blur-md md:ml-64">
-      <div className="flex-1">
-        {/* Search bar can go here later */}
+      <div className="flex-1 flex justify-end mr-4">
+        <Button onClick={openTransactionModal} className="bg-primary text-black hover:bg-primary/90 font-semibold">
+          <Plus className="h-4 w-4 mr-1" /> Add Transaction
+        </Button>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import AddTransactionModal from "@/components/dashboard/AddTransactionModal";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +24,8 @@ export default function RootLayout({
           <div className="md:pl-64">
             {children}
           </div>
+          <AddTransactionModal />
+          <Toaster theme="dark" position="top-right" />
         </Providers>
       </body>
     </html>
