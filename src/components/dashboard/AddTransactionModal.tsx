@@ -8,9 +8,9 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
-import { toast } from 'sonner' // We will install this for notifications
-import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
+import { useState, useRef } from 'react'
+import { Loader2, ScanLine, Upload } from 'lucide-react'
 
 const CATEGORIES = ['Rent', 'Groceries', 'Dining Out', 'Transport', 'Entertainment', 'Books', 'Income']
 
@@ -23,6 +23,8 @@ export default function AddTransactionModal() {
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
+  const [isScanning, setIsScanning] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Optimistic UI Mutation
   const { mutate, isPending } = useMutation({
@@ -40,13 +42,9 @@ export default function AddTransactionModal() {
       if (error) throw error
     },
     onMutate: async () => {
-      // Cancel outgoing refetches so they don't overwrite our optimistic update
       await queryClient.cancelQueries({ queryKey: ['transactions'] })
-
-      // Snapshot the previous value
       const previousTransactions = queryClient.getQueryData(['transactions'])
 
-      // Optimistically update the cache
       queryClient.setQueryData(['transactions'], (old: any) => {
         const newTransaction = {
           id: `temp-${Date.now()}`,
@@ -55,25 +53,61 @@ export default function AddTransactionModal() {
           category,
           description,
           date: new Date().toISOString(),
-          isOptimistic: true // Flag for UI styling
+          isOptimistic: true
         }
         return old ? [newTransaction, ...old] : [newTransaction]
       })
 
-      // Return context with the snapshotted value
       return { previousTransactions }
     },
     onError: (err, newTodo, context) => {
-      // If error, roll back to the snapshot
       queryClient.setQueryData(['transactions'], context?.previousTransactions)
       toast.error("Failed to add transaction. Please try again.")
     },
     onSuccess: () => {
       toast.success("Transaction added successfully!")
-      // Invalidate to refetch the real data from the server
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
     }
   })
+
+  const handleScanReceipt = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsScanning(true)
+    try {
+      // Convert to base64
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const base64Image = event.target?.result as string
+        
+        // Call our secure API route
+        const res = await fetch('/api/scan-receipt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Image })
+        })
+
+        const data = await res.json()
+        
+        if (res.ok) {
+          setAmount(data.amount.toString())
+          setCategory(data.category)
+          setDescription(data.description)
+          setType('expense') // Default receipt scans to expense
+          toast.success("Receipt scanned! Review and save.")
+        } else {
+          throw new Error(data.error)
+        }
+        setIsScanning(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error(error)
+      toast.error("Couldn't read the receipt. Try a clearer photo or enter manually.")
+      setIsScanning(false)
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,7 +116,6 @@ export default function AddTransactionModal() {
       return
     }
     mutate()
-    // Reset form
     setAmount('')
     setCategory('')
     setDescription('')
@@ -95,11 +128,44 @@ export default function AddTransactionModal() {
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add Transaction</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Log a new income or expense. It will update instantly.
+            Log a new income or expense, or scan a receipt with AI.
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        {/* Hidden File Input */}
+        <input 
+          type="file" 
+          accept="image/*" 
+          ref={fileInputRef} 
+          className="hidden" 
+          onChange={handleScanReceipt} 
+        />
+
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          {/* AI Scan Button */}
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => fileInputRef.current?.click()} 
+            disabled={isScanning}
+            className="w-full border-dashed border-primary/50 text-primary hover:bg-primary/10 hover:text-primary font-medium"
+          >
+            {isScanning ? (
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> AI is reading receipt...</>
+            ) : (
+              <><ScanLine className="h-4 w-4 mr-2" /> Scan Receipt with AI</>
+            )}
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or enter manually</span>
+            </div>
+          </div>
+
           {/* Type Toggle */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-lg">
             <button 
@@ -134,7 +200,7 @@ export default function AddTransactionModal() {
 
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Select onValueChange={setCategory} required>
+            <Select onValueChange={setCategory} value={category} required>
               <SelectTrigger className="bg-background/50 border-white/10">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
@@ -157,7 +223,7 @@ export default function AddTransactionModal() {
             />
           </div>
 
-          <Button type="submit" disabled={isPending} className="w-full bg-primary text-black hover:bg-primary/90 font-semibold">
+          <Button type="submit" disabled={isPending || isScanning} className="w-full bg-primary text-black hover:bg-primary/90 font-semibold">
             {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             Add Transaction
           </Button>
