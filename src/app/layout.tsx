@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import AddTransactionModal from "@/components/dashboard/AddTransactionModal";
+import AddBudgetModal from "@/components/dashboard/AddBudgetModal";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,6 +26,7 @@ export default function RootLayout({
             {children}
           </div>
           <AddTransactionModal />
+          <AddBudgetModal />
           <Toaster theme="dark" position="top-right" />
         </Providers>
       </body>
