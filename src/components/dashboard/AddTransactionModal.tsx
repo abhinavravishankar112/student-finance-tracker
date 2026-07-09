@@ -18,7 +18,7 @@ export default function AddTransactionModal() {
   const supabase = createClient()
   const { isTransactionModalOpen, closeTransactionModal } = useModalStore()
   const queryClient = useQueryClient()
-  
+
   const [type, setType] = useState<'income' | 'expense'>('expense')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
@@ -80,7 +80,7 @@ export default function AddTransactionModal() {
       const reader = new FileReader()
       reader.onload = async (event) => {
         const base64Image = event.target?.result as string
-        
+
         // Call our secure API route
         const res = await fetch('/api/scan-receipt', {
           method: 'POST',
@@ -89,7 +89,7 @@ export default function AddTransactionModal() {
         })
 
         const data = await res.json()
-        
+
         if (res.ok) {
           setAmount(data.amount.toString())
           setCategory(data.category)
@@ -131,22 +131,22 @@ export default function AddTransactionModal() {
             Log a new income or expense, or scan a receipt with AI.
           </DialogDescription>
         </DialogHeader>
-        
+
         {/* Hidden File Input */}
-        <input 
-          type="file" 
-          accept="image/*" 
-          ref={fileInputRef} 
-          className="hidden" 
-          onChange={handleScanReceipt} 
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleScanReceipt}
         />
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* AI Scan Button */}
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => fileInputRef.current?.click()} 
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
             disabled={isScanning}
             className="w-full border-dashed border-primary/50 text-primary hover:bg-primary/10 hover:text-primary font-medium"
           >
@@ -168,14 +168,14 @@ export default function AddTransactionModal() {
 
           {/* Type Toggle */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-lg">
-            <button 
+            <button
               type="button"
               onClick={() => setType('expense')}
               className={`py-2 rounded-md text-sm font-medium transition-colors ${type === 'expense' ? 'bg-destructive text-white' : 'text-muted-foreground'}`}
             >
               Expense
             </button>
-            <button 
+            <button
               type="button"
               onClick={() => setType('income')}
               className={`py-2 rounded-md text-sm font-medium transition-colors ${type === 'income' ? 'bg-primary text-black' : 'text-muted-foreground'}`}
@@ -186,11 +186,11 @@ export default function AddTransactionModal() {
 
           <div className="space-y-2">
             <Label htmlFor="amount">Amount ($)</Label>
-            <Input 
-              id="amount" 
-              type="number" 
+            <Input
+              id="amount"
+              type="number"
               step="0.01"
-              placeholder="0.00" 
+              placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
@@ -214,9 +214,9 @@ export default function AddTransactionModal() {
 
           <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>
-            <Input 
-              id="description" 
-              placeholder="e.g., Pizza for study group" 
+            <Input
+              id="description"
+              placeholder="e.g., Pizza for study group"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="bg-background/50 border-white/10"

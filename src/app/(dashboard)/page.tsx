@@ -48,8 +48,8 @@ export default function DashboardPage() {
               {isLoading ? (
                 <Skeleton className="h-8 w-32 bg-white/5" />
               ) : (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }} 
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`text-3xl font-bold ${balance >= 0 ? 'text-primary' : 'text-destructive'}`}
                 >
@@ -100,19 +100,19 @@ export default function DashboardPage() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="date" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(20, 20, 20, 0.9)', 
-                      border: '1px solid rgba(255,255,255,0.1)', 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(20, 20, 20, 0.9)',
+                      border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: '0.5rem',
                       color: '#fff'
-                    }} 
+                    }}
                   />
                   <Area type="monotone" dataKey="amount" stroke="#10b981" fillOpacity={1} fill="url(#colorAmount)" strokeWidth={2} />
                 </AreaChart>
