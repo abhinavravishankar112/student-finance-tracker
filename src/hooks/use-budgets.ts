@@ -20,6 +20,12 @@ export function useBudgets() {
   const query = useQuery<Budget[]>({
     queryKey: ['budgets'],
     queryFn: async () => {
+      const isMock = typeof window !== 'undefined' && localStorage.getItem('cc_mock_session') === 'true'
+      if (isMock) {
+        const localData = localStorage.getItem('cc_mock_budgets')
+        return localData ? JSON.parse(localData) : []
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
@@ -36,6 +42,22 @@ export function useBudgets() {
 
   const addBudgetMutation = useMutation({
     mutationFn: async (newBudget: { category: string; limit_amount: number }) => {
+      const isMock = typeof window !== 'undefined' && localStorage.getItem('cc_mock_session') === 'true'
+      if (isMock) {
+        const newLocalBudget = {
+          id: `mock-bg-${Date.now()}`,
+          category: newBudget.category,
+          limit_amount: newBudget.limit_amount,
+          month: currentMonth,
+          year: currentYear
+        }
+        const localData = localStorage.getItem('cc_mock_budgets')
+        const currentBudgets = localData ? JSON.parse(localData) : []
+        currentBudgets.push(newLocalBudget)
+        localStorage.setItem('cc_mock_budgets', JSON.stringify(currentBudgets))
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Not authenticated")
 
