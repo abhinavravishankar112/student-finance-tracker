@@ -9,10 +9,8 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://your-domain.com"), // Change this to your vercel URL later!
   title: "CampusCoin | Smart Finance for Students",
   description: "Track your expenses, manage budgets, and survive college.",
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -24,9 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <div className="md:pl-64">
-            {children}
-          </div>
+          {children}
           <AddTransactionModal />
           <AddBudgetModal />
           <Toaster theme="dark" position="top-right" />

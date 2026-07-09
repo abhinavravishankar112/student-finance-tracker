@@ -34,7 +34,7 @@ export default function BudgetsPage() {
   }
 
   return (
-    <>
+    <div className="md:pl-64">
       <Sidebar />
       <Header />
       <main className="p-4 md:p-8 space-y-6">
@@ -100,6 +100,6 @@ export default function BudgetsPage() {
           )}
         </div>
       </main>
-    </>
+    </div>
   )
 }

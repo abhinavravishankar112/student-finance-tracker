@@ -77,5 +77,5 @@ export function useBudgets() {
     onError: () => toast.error("Failed to create budget.")
   })
 
-  return { ...query, addBudget: addBudgetMutation.mutate }
+  return { ...query, addBudget: addBudgetMutation.mutate, isPending: addBudgetMutation.isPending }
 }

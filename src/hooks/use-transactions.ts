@@ -20,7 +20,7 @@ export function useTransactions() {
     queryKey: ['transactions'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+      if (!user) return []
 
       const { data, error } = await supabase
         .from('transactions')

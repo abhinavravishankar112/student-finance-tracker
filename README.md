@@ -54,10 +54,3 @@ CampusCoin is a modern, AI-powered finance tracker designed specifically for col
 
 ---
 Built with 💚 and a lot of caffeine.
-```
-
-### Your Final Task:
-1. Upgrade the Login page.
-2. Add the PWA files (`manifest.json` and `icon.svg`).
-3. Write the `README.md`.
-4. Run `npm run dev` and look at your landing page!

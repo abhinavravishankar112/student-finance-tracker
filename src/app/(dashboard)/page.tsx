@@ -26,7 +26,7 @@ export default function DashboardPage() {
   }))
 
   return (
-    <>
+    <div className="md:pl-64">
       <Sidebar />
       <Header />
       <main className="p-4 md:p-8 space-y-8">
@@ -159,6 +159,6 @@ export default function DashboardPage() {
           </Card>
         </div>
       </main>
-    </>
+    </div>
   )
 }
