@@ -23,7 +23,35 @@ export function useBudgets() {
       const isMock = typeof window !== 'undefined' && localStorage.getItem('cc_mock_session') === 'true'
       if (isMock) {
         const localData = localStorage.getItem('cc_mock_budgets')
-        return localData ? JSON.parse(localData) : []
+        if (localData) {
+          return JSON.parse(localData)
+        } else {
+          const initialBudgets: Budget[] = [
+            {
+              id: 'mock-bg-1',
+              category: 'Rent',
+              limit_amount: 700,
+              month: currentMonth,
+              year: currentYear
+            },
+            {
+              id: 'mock-bg-2',
+              category: 'Groceries',
+              limit_amount: 150,
+              month: currentMonth,
+              year: currentYear
+            },
+            {
+              id: 'mock-bg-3',
+              category: 'Dining Out',
+              limit_amount: 60,
+              month: currentMonth,
+              year: currentYear
+            }
+          ]
+          localStorage.setItem('cc_mock_budgets', JSON.stringify(initialBudgets))
+          return initialBudgets
+        }
       }
 
       const { data: { user } } = await supabase.auth.getUser()

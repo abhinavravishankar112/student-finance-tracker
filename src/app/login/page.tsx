@@ -86,6 +86,26 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Continue with Google'}
           </button>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.setItem('cc_mock_session', 'true')
+              window.location.href = '/'
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-semibold text-sm hover:bg-white/10 transition-all cursor-pointer"
+          >
+            Try Demo Mode (No Login)
+          </button>
+
           <p className="text-xs text-center text-muted-foreground">
             By signing in, you agree to our{' '}
             <span className="underline cursor-pointer">Terms</span> and{' '}

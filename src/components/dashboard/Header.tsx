@@ -18,6 +18,18 @@ export default function Header() {
 
   useEffect(() => {
     const getUser = async () => {
+      const isMock = typeof window !== 'undefined' && localStorage.getItem('cc_mock_session') === 'true'
+      if (isMock) {
+        setUser({
+          id: 'mock-user-id',
+          email: 'student@campuscoin.edu',
+          user_metadata: {
+            full_name: 'Test Student',
+            avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'
+          }
+        } as any)
+        return
+      }
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
     }
@@ -26,6 +38,15 @@ export default function Header() {
   }, [])
 
   const handleLogout = async () => {
+    const isMock = typeof window !== 'undefined' && localStorage.getItem('cc_mock_session') === 'true'
+    if (isMock) {
+      localStorage.removeItem('cc_mock_session')
+      localStorage.removeItem('cc_mock_transactions')
+      localStorage.removeItem('cc_mock_budgets')
+      router.push('/login')
+      router.refresh()
+      return
+    }
     await supabase.auth.signOut()
     router.push('/login')
     router.refresh()

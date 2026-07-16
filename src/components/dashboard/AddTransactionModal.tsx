@@ -28,30 +28,47 @@ export default function AddTransactionModal() {
 
   // Optimistic UI Mutation
   const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (variables: { amount: number; type: 'income' | 'expense'; category: string; description: string }) => {
+      const isMock = typeof window !== 'undefined' && localStorage.getItem('cc_mock_session') === 'true'
+      if (isMock) {
+        const newTransaction = {
+          id: `mock-tx-${Date.now()}`,
+          amount: variables.amount,
+          type: variables.type,
+          category: variables.category,
+          description: variables.description || null,
+          date: new Date().toISOString()
+        }
+        const localData = localStorage.getItem('cc_mock_transactions')
+        const currentTransactions = localData ? JSON.parse(localData) : []
+        const updated = [newTransaction, ...currentTransactions]
+        localStorage.setItem('cc_mock_transactions', JSON.stringify(updated))
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Not authenticated")
 
       const { error } = await supabase.from('transactions').insert({
         user_id: user.id,
-        amount: parseFloat(amount),
-        type,
-        category,
-        description
+        amount: variables.amount,
+        type: variables.type,
+        category: variables.category,
+        description: variables.description || null
       })
       if (error) throw error
     },
-    onMutate: async () => {
+    onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ['transactions'] })
       const previousTransactions = queryClient.getQueryData(['transactions'])
 
       queryClient.setQueryData(['transactions'], (old: any) => {
         const newTransaction = {
           id: `temp-${Date.now()}`,
-          amount: parseFloat(amount),
-          type,
-          category,
-          description,
+          amount: variables.amount,
+          type: variables.type,
+          category: variables.category,
+          description: variables.description || null,
           date: new Date().toISOString(),
           isOptimistic: true
         }
@@ -115,7 +132,12 @@ export default function AddTransactionModal() {
       toast.error("Please fill in all required fields.")
       return
     }
-    mutate()
+    mutate({
+      amount: parseFloat(amount),
+      type,
+      category,
+      description
+    })
     setAmount('')
     setCategory('')
     setDescription('')
