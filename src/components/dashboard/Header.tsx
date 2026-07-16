@@ -22,7 +22,8 @@ export default function Header() {
       setUser(user)
     }
     getUser()
-  }, [supabase])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
