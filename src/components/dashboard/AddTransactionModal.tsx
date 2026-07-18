@@ -96,36 +96,39 @@ export default function AddTransactionModal() {
 
     setIsScanning(true)
     try {
-      // Convert to base64
-      const reader = new FileReader()
-      reader.onload = async (event) => {
-        const base64Image = event.target?.result as string
+      // Convert to base64 using a Promise so errors propagate to our catch block
+      const base64Image = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (event) => resolve(event.target?.result as string)
+        reader.onerror = () => reject(new Error('Failed to read file'))
+        reader.readAsDataURL(file)
+      })
 
-        // Call our secure API route
-        const res = await fetch('/api/scan-receipt', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64Image })
-        })
+      // Call our secure API route
+      const res = await fetch('/api/scan-receipt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image })
+      })
 
-        const data = await res.json()
+      const data = await res.json()
 
-        if (res.ok) {
-          setAmount(data.amount.toString())
-          setCategory(data.category)
-          setDescription(data.description)
-          setType('expense') // Default receipt scans to expense
-          toast.success("Receipt scanned! Review and save.")
-        } else {
-          throw new Error(data.error)
-        }
-        setIsScanning(false)
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to scan receipt')
       }
-      reader.readAsDataURL(file)
-    } catch (error) {
+
+      setAmount(data.amount.toString())
+      setCategory(data.category)
+      setDescription(data.description)
+      setType('expense') // Default receipt scans to expense
+      toast.success("Receipt scanned! Review the details and save.")
+    } catch (error: any) {
       console.error(error)
-      toast.error("Couldn't read the receipt. Try a clearer photo or enter manually.")
+      toast.error(error?.message ?? "Couldn't read the receipt. Try a clearer photo or enter manually.")
+    } finally {
       setIsScanning(false)
+      // Reset input so the same file can be re-selected if needed
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
@@ -226,10 +229,10 @@ export default function AddTransactionModal() {
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <Select onValueChange={setCategory} value={category} required>
-              <SelectTrigger className="bg-background/50 border-white/10">
+              <SelectTrigger className="w-full bg-background/50 border-white/10">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
-              <SelectContent className="glass-card border-white/10">
+              <SelectContent className="border-white/10" position="popper">
                 {CATEGORIES.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}

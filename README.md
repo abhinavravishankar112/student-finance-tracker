@@ -51,6 +51,3 @@ CampusCoin is a modern, AI-powered finance tracker designed specifically for col
 ## 🏗 Architecture Diagram
 
 [ Add a simple screenshot of your Supabase schema or an ERD diagram here ]
-
----
-Built with 💚 and a lot of caffeine.

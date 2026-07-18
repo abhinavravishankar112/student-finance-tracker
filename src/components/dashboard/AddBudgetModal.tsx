@@ -45,10 +45,10 @@ export default function AddBudgetModal() {
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <Select onValueChange={setCategory} value={category} required>
-              <SelectTrigger className="bg-background/50 border-white/10">
+              <SelectTrigger className="w-full bg-background/50 border-white/10">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
-              <SelectContent className="glass-card border-white/10">
+              <SelectContent className="border-white/10" position="popper">
                 {CATEGORIES.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}
