@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
+import { useCurrency } from '@/hooks/use-currency'
+import { CURRENCIES } from '@/lib/currency'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useState, useRef } from 'react'
@@ -18,6 +20,7 @@ export default function AddTransactionModal() {
   const supabase = createClient()
   const { isTransactionModalOpen, closeTransactionModal } = useModalStore()
   const queryClient = useQueryClient()
+  const { currency } = useCurrency()
 
   const [type, setType] = useState<'income' | 'expense'>('expense')
   const [amount, setAmount] = useState('')
@@ -207,7 +210,7 @@ export default function AddTransactionModal() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount ($)</Label>
+            <Label htmlFor="amount">Amount ({CURRENCIES[currency].symbol})</Label>
             <Input
               id="amount"
               type="number"

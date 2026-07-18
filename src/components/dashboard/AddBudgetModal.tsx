@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useBudgets } from '@/hooks/use-budgets'
+import { useCurrency } from '@/hooks/use-currency'
+import { CURRENCIES } from '@/lib/currency'
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 
@@ -15,7 +17,8 @@ const CATEGORIES = ['Rent', 'Groceries', 'Dining Out', 'Transport', 'Entertainme
 export default function AddBudgetModal() {
   const { isBudgetModalOpen, closeBudgetModal } = useModalStore()
   const { addBudget, isPending } = useBudgets()
-  
+  const { currency } = useCurrency()
+
   const [category, setCategory] = useState('')
   const [limit, setLimit] = useState('')
 
@@ -54,7 +57,7 @@ export default function AddBudgetModal() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="limit">Monthly Limit ($)</Label>
+            <Label htmlFor="limit">Monthly Limit ({CURRENCIES[currency].symbol})</Label>
             <Input 
               id="limit" 
               type="number" 

@@ -3,7 +3,7 @@
 import Sidebar from '@/components/dashboard/Sidebar'
 import Header from '@/components/dashboard/Header'
 import { useTransactions } from '@/hooks/use-transactions'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/use-currency'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
@@ -12,6 +12,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 
 export default function DashboardPage() {
   const { data: transactions, isLoading } = useTransactions()
+  const { format: formatCurrency } = useCurrency()
 
   // Calculations
   const income = transactions?.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0) || 0

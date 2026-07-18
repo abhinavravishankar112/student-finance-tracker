@@ -3,7 +3,7 @@
 import Sidebar from '@/components/dashboard/Sidebar'
 import Header from '@/components/dashboard/Header'
 import { useTransactions } from '@/hooks/use-transactions'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/use-currency'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 
 export default function TransactionsPage() {
   const { data: transactions, isLoading, deleteTransaction } = useTransactions()
+  const { format: formatCurrency } = useCurrency()
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all')
 
   const filteredTransactions = transactions?.filter(t => 

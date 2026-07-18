@@ -4,7 +4,7 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import Header from '@/components/dashboard/Header'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/use-currency'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ export default function BudgetsPage() {
   const { data: budgets, isLoading } = useBudgets()
   const { data: transactions } = useTransactions()
   const { openBudgetModal } = useModalStore()
+  const { format: formatCurrency } = useCurrency()
 
   // Calculate spent amount per category for the CURRENT month
   const currentMonth = new Date().getMonth()
