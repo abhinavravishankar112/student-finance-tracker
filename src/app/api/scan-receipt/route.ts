@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const ai = new GoogleGenAI({ apiKey })
 
     // Try models in order — each has its own independent quota pool
-    const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b']
+    const modelsToTry = ['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-2.0-flash']
     let lastError: any = null
 
     for (const model of modelsToTry) {
