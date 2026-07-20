@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts' // We'll use Recharts directly, it's already installed via Tremor/Shadcn
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { groupByDay } from '@/lib/analytics'
 
 export default function DashboardPage() {
   const { data: transactions, isLoading } = useTransactions()
@@ -19,12 +20,7 @@ export default function DashboardPage() {
   const expenses = transactions?.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0) || 0
   const balance = income - expenses
 
-  // Chart Data formatting (last 7 days dummy logic for visual flair)
-  // In a real app, you'd group by date. We'll do a quick mock for now to make it look alive.
-  const chartData = (transactions || []).slice(0, 7).reverse().map(t => ({
-    date: new Date(t.date).toLocaleDateString('en-US', { weekday: 'short' }),
-    amount: t.type === 'expense' ? -t.amount : t.amount
-  }))
+  const chartData = groupByDay(transactions || [], 7)
 
   return (
     <div className="md:pl-64">
@@ -105,9 +101,10 @@ export default function DashboardPage() {
                       <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="label" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                   <Tooltip
+                    formatter={(value: number) => formatCurrency(value)}
                     contentStyle={{
                       backgroundColor: 'rgba(20, 20, 20, 0.9)',
                       border: '1px solid rgba(255,255,255,0.1)',
@@ -115,7 +112,7 @@ export default function DashboardPage() {
                       color: '#fff'
                     }}
                   />
-                  <Area type="monotone" dataKey="amount" stroke="#10b981" fillOpacity={1} fill="url(#colorAmount)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="net" stroke="#10b981" fillOpacity={1} fill="url(#colorAmount)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
