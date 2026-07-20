@@ -7,6 +7,7 @@ A finance tracker built for the realities of student life: irregular income, tig
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat-square&logo=supabase)
 ![Gemini](https://img.shields.io/badge/Gemini-Vision-8E75B2?style=flat-square&logo=googlegemini)
+![Recharts](https://img.shields.io/badge/Recharts-Charts-FF6B6B?style=flat-square)
 
 ## Overview
 
@@ -20,6 +21,7 @@ The app ships with a no-login demo mode, so anyone can try it against locally st
 - **Optimistic UI** — Transactions and budgets update on screen the instant you act, powered by React Query for server state and Zustand for UI state, then reconcile (or roll back) once the server responds.
 - **Row Level Security** — Every query runs against Supabase Postgres with RLS policies enforced at the database layer, so a user's financial data is never reachable by anyone else — even in the event of an application bug.
 - **Smart Budgets** — Per-category budgets with progress indicators that shift from green to amber to red as a limit approaches, giving an at-a-glance read on spending health.
+- **Analytics** — A dedicated page breaking down spending trends over the last 30 days, expenses by category, and income vs. expense across the last 6 months.
 - **Multi-Currency Support** — Switch the display currency (INR, USD, EUR, GBP, JPY, AUD) from Settings; the choice persists locally and formats every amount app-wide.
 - **Demo Mode** — Explore the full app with locally stored mock data and no account required, via "Try Demo Mode" on the login screen.
 - **Installable PWA** — Add CampusCoin to a phone's home screen for a native-app-like experience.
@@ -31,7 +33,7 @@ The app ships with a no-login demo mode, so anyone can try it against locally st
 | Framework | Next.js 16 (App Router, React Compiler) |
 | Language | TypeScript |
 | UI | Tailwind CSS, Radix UI / shadcn, Framer Motion |
-| Data Visualization | Tremor, Recharts |
+| Data Visualization | Recharts |
 | Server State | TanStack React Query |
 | Client State | Zustand |
 | Database & Auth | Supabase (PostgreSQL, Google OAuth) |
@@ -76,6 +78,7 @@ The app runs at [http://localhost:3000](http://localhost:3000). Sign in with Goo
 src/
 ├── app/
 │   ├── (dashboard)/     # Home dashboard
+│   ├── analytics/       # Spending trends, category breakdown, income vs. expense
 │   ├── api/scan-receipt/ # Gemini-backed receipt parsing endpoint
 │   ├── auth/callback/   # Supabase OAuth callback
 │   ├── budgets/         # Budget management
@@ -84,7 +87,7 @@ src/
 │   └── transactions/    # Transaction history
 ├── components/          # Dashboard UI and shadcn primitives
 ├── hooks/                # React Query hooks, currency context
-├── lib/                  # Supabase clients, currency, formatting utilities
+├── lib/                  # Supabase clients, currency, analytics, formatting utilities
 └── store/                # Zustand stores
 ```
 
