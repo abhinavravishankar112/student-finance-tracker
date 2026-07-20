@@ -1,53 +1,93 @@
-# CampusCoin 🪙
+# CampusCoin
 
-CampusCoin is a modern, AI-powered finance tracker designed specifically for college students. Featuring a sleek "Midnight Glass" UI, optimistic updates for zero-latency feedback, and an AI receipt scanner, it turns boring budgeting into a delightful experience.
+A finance tracker built for the realities of student life: irregular income, tight budgets, and zero patience for clunky spreadsheets. CampusCoin pairs an AI receipt scanner with an optimistic, instant-feedback interface so tracking money never feels like a chore.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
-![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=for-the-badge&logo=supabase)
-![OpenAI](https://img.shields.io/badge/OpenAI-Vision_API-412991?style=for-the-badge&logo=openai)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19-149ECA?style=flat-square&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat-square&logo=supabase)
+![Gemini](https://img.shields.io/badge/Gemini-Vision-8E75B2?style=flat-square&logo=googlegemini)
 
-## ✨ Features
+## Overview
 
-- **AI Receipt Scanner:** Upload a photo of a receipt, and OpenAI's Vision API instantly extracts the merchant, amount, and category, auto-filling the transaction form.
-- **Optimistic UI Architecture:** Built with React Query and Zustand. When a user adds or deletes a transaction, the UI updates instantly before the server even responds, rolling back gracefully if an error occurs.
-- **Row Level Security (RLS):** Strict Supabase Postgres RLS policies ensure users can never query or mutate another user's financial data.
-- **Smart Budgets:** Visual progress bars that dynamically change color (green -> yellow -> red) as students approach their spending limits.
-- **Premium Dark UI:** Custom "Midnight Glass" design system utilizing Tailwind CSS, Framer Motion for fluid animations, and Tremor/Recharts for data visualization.
-- **PWA Ready:** Installable on mobile devices for a native-app-like experience.
+Most budgeting apps ask students to manually key in every transaction — a habit that rarely survives past week one. CampusCoin removes that friction: photograph a receipt and the app extracts the merchant, amount, and category automatically. Every action, from adding a transaction to updating a budget, reflects in the UI immediately, with graceful rollback if the underlying request fails.
 
-## 🛠 Tech Stack
+The app ships with a no-login demo mode, so anyone can try it against locally stored sample data before connecting a real Supabase project.
 
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS + Shadcn UI
-- **Animations:** Framer Motion
-- **Backend/Database:** Supabase (PostgreSQL)
-- **State Management:** React Query (Server) + Zustand (Client)
-- **AI:** OpenAI Vision API (gpt-4o-mini)
-- **Hosting:** Vercel
+## Features
 
-## 🚀 Getting Started
+- **AI Receipt Scanning** — Upload a photo and Google Gemini extracts the merchant, amount, and spending category. Requests automatically fail over across `gemini-3.5-flash`, `gemini-3.1-flash-lite`, and `gemini-2.0-flash` when a model hits its quota, so scanning stays reliable without manual intervention.
+- **Optimistic UI** — Transactions and budgets update on screen the instant you act, powered by React Query for server state and Zustand for UI state, then reconcile (or roll back) once the server responds.
+- **Row Level Security** — Every query runs against Supabase Postgres with RLS policies enforced at the database layer, so a user's financial data is never reachable by anyone else — even in the event of an application bug.
+- **Smart Budgets** — Per-category budgets with progress indicators that shift from green to amber to red as a limit approaches, giving an at-a-glance read on spending health.
+- **Multi-Currency Support** — Switch the display currency (INR, USD, EUR, GBP, JPY, AUD) from Settings; the choice persists locally and formats every amount app-wide.
+- **Demo Mode** — Explore the full app with locally stored mock data and no account required, via "Try Demo Mode" on the login screen.
+- **Installable PWA** — Add CampusCoin to a phone's home screen for a native-app-like experience.
 
-1. Clone the repo
-   ```bash
-   git clone https://github.com/yourusername/campuscoin.git
-   ```
-2. Install dependencies
-   ```bash
-   npm install
-   ```
-3. Set up environment variables (`.env.local`)
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   OPENAI_API_KEY=your_openai_key
-   ```
-4. Run the development server
-   ```bash
-   npm run dev
-   ```
+## Tech Stack
 
-## 🏗 Architecture Diagram
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router, React Compiler) |
+| Language | TypeScript |
+| UI | Tailwind CSS, Radix UI / shadcn, Framer Motion |
+| Data Visualization | Tremor, Recharts |
+| Server State | TanStack React Query |
+| Client State | Zustand |
+| Database & Auth | Supabase (PostgreSQL, Google OAuth) |
+| Receipt AI | Google Gemini (`@google/genai`) |
+| Deployment | Vercel |
 
-[ Add a simple screenshot of your Supabase schema or an ERD diagram here ]
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18.18 or later
+- A [Supabase](https://supabase.com) project
+- A [Google AI Studio](https://aistudio.google.com/) API key for Gemini
+
+### Setup
+
+```bash
+git clone https://github.com/yourusername/campuscoin.git
+cd campuscoin
+npm install
+```
+
+Create a `.env.local` file in the project root:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Start the dev server:
+
+```bash
+npm run dev
+```
+
+The app runs at [http://localhost:3000](http://localhost:3000). Sign in with Google, or select **Try Demo Mode** on the login screen to explore without configuring Supabase.
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── (dashboard)/     # Home dashboard
+│   ├── api/scan-receipt/ # Gemini-backed receipt parsing endpoint
+│   ├── auth/callback/   # Supabase OAuth callback
+│   ├── budgets/         # Budget management
+│   ├── login/           # Auth + demo mode entry
+│   ├── settings/        # Currency preferences
+│   └── transactions/    # Transaction history
+├── components/          # Dashboard UI and shadcn primitives
+├── hooks/                # React Query hooks, currency context
+├── lib/                  # Supabase clients, currency, formatting utilities
+└── store/                # Zustand stores
+```
+
+## Security Model
+
+Financial data is scoped per user through Supabase Row Level Security policies rather than application-level checks alone, so access control holds even if a client-side guard is bypassed.
