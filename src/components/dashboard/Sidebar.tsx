@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Receipt, PiggyBank, Settings } from 'lucide-react'
+import { LayoutDashboard, Receipt, PiggyBank, BarChart3, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Transactions', href: '/transactions', icon: Receipt },
   { name: 'Budgets', href: '/budgets', icon: PiggyBank },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
